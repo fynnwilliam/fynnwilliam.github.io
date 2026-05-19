@@ -1,6 +1,5 @@
-|                                Outline                            |
-| ----------------------------------------------------------------- |
-|  [Four Benefits of std::atomic\<T\>](#4-benefits-of-stdatomict)   |
+# Outline
+> [Four Benefits of std::atomic\<T\>](#four-benefits-of-stdatomict)
 
 
 # Four Benefits of std::atomic\<T\>
