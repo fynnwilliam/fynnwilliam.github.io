@@ -1,4 +1,4 @@
-- # [4 benefits of atomic](#4-benefits-of-stdatomict)
+1. [4 benefits of atomic](#4-benefits-of-stdatomict)
 
 
 ## 4 benefits of `std::atomic<T>`
