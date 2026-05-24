@@ -6,8 +6,8 @@
 
 ### It makes our code portable
 
-Let's use `ARM` and `Intel` to elaborate this point. `ARM` implements a
-`relaxed` memory ordering by default whiles `Intel` implements sequencial
+Let's use `arm` and `intel` to elaborate this point. `arm` implements a
+`relaxed` memory ordering by default whiles `intel` implements sequencial
 consistency. The beauty of `std::atomic<T>`, where `T` is the data type,
 in this mix, is the default memory ordering on `std::atomic<T>` being 
 `std::memory_order_seq_cst`. This implies sequential consistency. So we can
