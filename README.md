@@ -49,7 +49,7 @@ in a sentence.
 Literally, counting how many spaces there are in a sentence and adding one
 to that tells how many words make up that sentence.
 
-_eg: "There are nine spaces in this wording and ten words."_
+> _eg: "There are nine spaces in this wording and ten words."_
 
 The algorithm stated above works however, there are some corner cases yet
 to be resolved - if there happens to be preceding, trailing or 
@@ -60,7 +60,7 @@ spaces - where unique implies ignoring consecutive duplicate spaces, in
 a giving text, and adding one to that only if there are no trailing or 
 preceding spaces.
 
-_eg: " There are thirteen spaces  in  this wording but ten words. "_
+> _eg: " There are thirteen spaces  in  this wording but ten words. "_
 
 From the example above, despite we having preceding and trailing spaces, 
 as well as two consecutive spaces between the words _spaces_ and _in_ and
@@ -104,7 +104,7 @@ implementation.
 printable character. This approach automatically handles preceding
 and consecutive duplicate spaces. Below are some possible changes we
 may consider to improve the performance of our routine:
- - on `line 3`, we initialise three variables `i, j and size` - we
+ - on `line 3`, we initialise three variables `i, j` and `size` - we
  only need `size`. It will require us to walk the text in reverse.
  - on `line 4`, we first check for a printable character and then
  check for a whitespace character. Since std::isspace returns a
