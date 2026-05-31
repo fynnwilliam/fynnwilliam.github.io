@@ -1,6 +1,7 @@
 # outline
 > [four benefits of std::atomic\<T\>](#four-benefits-of-stdatomict)<br>
-> [counting ~~semaphore~~ words](#counting-semaphore-words)
+> [counting ~~semaphore~~ words](#counting-semaphore-words)<br>
+> [convert a map -> vector](#convert-a-map---vector)
 
 
 # four benefits of std::atomic\<T\>
@@ -128,3 +129,112 @@ may consider to improve the performance of our routine:
 So that will be it for now - until the next read, take care.
 
 [ ↑ back to the top](#outline)
+<br>
+
+# convert a map -> vector
+
+You know what, there is something fascinating about
+_vectors_ - I mean a _dynamic array_ or an _array_. I think
+they are quite similar to _maps_, at least, in terms of
+being _associative containers_. Elements in a `map` are stored 
+in _key-value pairs_ and a `vector` could be considered as such.
+Every element in a `vector` has an _index_, which is the _key_ 
+and the _element_ held in that position, the `value`.
+
+> A `map` in other languages may be referred to as a _dictionary_
+> and `vector`, a _random accessible list_ or an _array_. This 
+> technique may be applied in other languages as well.
+
+`std::map<key_t, value_t> -> std::vector<value_t>`
+
+When utilising a map, one may consider any data type
+for the _keys_ as long as the _hashing function_ knows how
+to crunch such types. You are more than welcome to
+overload the hashing function in case it does not yet
+support your preferred data type. That is to say we are
+almost always able to assign any data type as a _key_ for
+_maps_. Things get quite a bit on the edge and may require
+some carefulness and patience when converting a `map` to 
+`vector`.
+
+Remember we mentioned that _index_ is to a `vector` as the 
+_key_ is to a `map`? Selecting a _key_type_ for a `map` is 
+quite flexible but for a `vector`, the _index_ has to be an 
+_unsigned integral_ or _safely convertible_ to an 
+_unsigned integral_. Alright, to make this representation, 
+one ought to find a safe means to convert the `key_type` to an 
+`integral_t`.
+
+- `char` -> `unsigned_t` doable
+- `int`-> `unsigned_t` doable - watch out for overflow due to negative values
+- `bool` -> `unsigned_t` this is a joke 😄
+- `size_t` -> `unsigned_t` already an integral_t
+- `string` -> `unsigned_t` requires creativity -
+could be as simple as calling `std::from_chars` that's if
+the string is actually a integral value held as a string
+for example, a short id or age or something like that.
+- `pair -> unsigned_t` creativity and care required
+
+We've got snippets of code to illustrate how we could
+utilise this technique in our codebases or library 
+implementations and benchmarks to assure us that our 
+effort may pay off.
+
+Below is an implementation of a function writing data into 
+a bucket and we use `std::unordered_map<uint32_t, uint32_t>`. 
+The one further down switches the data type for the bucket to
+`std::vector<uint32_t>`.
+
+```c++
+ 1  auto fill_bucket_m(std::uint32_t n) {
+ 2    std::mt19937 generator{std::random_device{}()};
+ 3    std::uniform_int_distribution<std::uint32_t> distribution(0, n - 1);
+ 4
+ 5    std::unordered_map<std::uint32_t, std::uint32_t> bucket;
+ 6    bucket.reserve(n);
+ 7    for (; 0 < n; --n)
+ 8      bucket[distribution(generator)] = n;
+ 9    return bucket;
+10  }
+```
+_inserting a **n** values into a std::unordered_map_
+
+```c++
+ 1  auto fill_bucket_v(std::uint32_t n) {
+ 2    std::mt19937 generator{std::random_device{}()};
+ 3    std::uniform_int_distribution<std::uint32_t> distribution(0, n - 1);
+ 4
+ 5    std::vector<std::uint32_t> bucket(n);
+ 6    for (; 0 < n; --n)
+ 7      bucket[distribution(generator)] = n;
+ 8    return bucket;
+ 9  }
+```
+_inserting a **n** values into a std::vector_
+
+
+Running `fill_bucket_m(1'000'000)` finishes in _~120.7 ms_ whiles 
+`fill_bucket_v(1'000'000)` completes in _~6.79 to ~22 ms_ depending
+on which compiler and libraries used to compiler the code. That's at 
+best, _17.78x_ faster. Also, if we are able to express the size 
+of the bucket as a _constant expression_, we could use `std::array`
+as the data structure for our bucket - it may be _25.75x_ faster.
+
+Alongside the speedup, converting `map` to `vector` saves all the storage 
+used by the `map` to hold its _keys_ - roughly 
+`map_size * sizeof(map::key_type)` bytes, introducing a quieter memory 
+footprint - which helps the entire system to function efficiently.
+
+Michelle D'Souza gives more real-world reports on this topic in her talk titled
+[Cache Me Maybe: The Performance Secret Every C++ Developer Needs](https://www.youtube.com/watch?v=VhKq0nzPTh0).
+
+In scenarios where we are unable to convert the keys safely into `unsigned` 
+values. we may proceed to use a `map`. It is also recommended to consider 
+`unordered_map` and to reserve when you have knowledge of what the size 
+of the container will be. Kevin Carpenter elaborates on this in his talk 
+[O(1) or O(no-no-no): Mastering the unordered_map](https://accuonsea.uk/2026/sessions/o1-or-ono-no-no-mastering-the-unordered_map/).
+
+I do hope you have fun with this update - talk to you later.
+
+[ ↑ back to the top](#outline)
+
