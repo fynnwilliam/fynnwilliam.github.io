@@ -133,7 +133,7 @@ So that will be it for now - until the next read, take care.
 
 # convert a map -> vector
 
-You know what, there is something fascinating about
+There is something fascinating about
 _vectors_ - I mean a _dynamic array_ or an _array_. I think
 they are quite similar to _maps_, at least, in terms of
 being _associative containers_. Elements in a `map` are stored 
