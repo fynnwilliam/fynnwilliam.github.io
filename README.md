@@ -165,11 +165,11 @@ _unsigned integral_. Alright, to make this representation,
 one ought to find a safe means to convert the `key_type` to an 
 `integral_t`.
 
-- `char` -> `unsigned_t` doable
-- `int`-> `unsigned_t` doable - watch out for overflow due to negative values
-- `bool` -> `unsigned_t` this is a joke 😄
-- `size_t` -> `unsigned_t` already an integral_t
-- `string` -> `unsigned_t` requires creativity -
+- `char -> unsigned_t` doable
+- `int -> unsigned_t` doable - watch out for overflow due to negative values
+- `bool -> unsigned_t` this is a joke 😄
+- `size_t -> unsigned_t` already an integral_t
+- `string -> unsigned_t` requires creativity -
 could be as simple as calling `std::from_chars` that's if
 the string is actually a integral value held as a string
 for example, a short id or age or something like that.
@@ -198,7 +198,7 @@ The one further down switches the data type for the bucket to
 10  }
 ```
 _inserting a **n** values into a std::unordered_map_
-
+<br>
 ```c++
  1  auto fill_bucket_v(std::uint32_t n) {
  2    std::mt19937 generator{std::random_device{}()};
@@ -225,13 +225,13 @@ used by the `map` to hold its _keys_ - roughly
 `map_size * sizeof(map::key_type)` bytes, introducing a quieter memory 
 footprint - which helps the entire system to function efficiently.
 
-Michelle D'Souza gives more real-world reports on this topic in her talk titled
+_Michelle D'Souza_ gives more real-world reports on this topic in her talk titled
 [Cache Me Maybe: The Performance Secret Every C++ Developer Needs](https://www.youtube.com/watch?v=VhKq0nzPTh0).
 
 In scenarios where we are unable to convert the keys safely into `unsigned` 
 values. we may proceed to use a `map`. It is also recommended to consider 
 `unordered_map` and to reserve when you have knowledge of what the size 
-of the container will be. Kevin Carpenter elaborates on this in his talk 
+of the container will be. _Kevin Carpenter_ elaborates on this in his talk 
 [O(1) or O(no-no-no): Mastering the unordered_map](https://accuonsea.uk/2026/sessions/o1-or-ono-no-no-mastering-the-unordered_map/).
 
 I do hope you have fun with this update - talk to you later.
