@@ -214,11 +214,10 @@ _inserting a **n** values into a std::vector_
 
 
 Running `fill_bucket_m(1'000'000)` finishes in _~120.7 ms_ whiles 
-`fill_bucket_v(1'000'000)` completes in _~6.79 to ~22 ms_ depending
-on which compiler and libraries used to compiler the code. That's at 
-best, _17.78x_ faster. Also, if we are able to express the size 
+`fill_bucket_v(1'000'000)` completes in _~6 ms_ - that's 
+_20.11x_ faster. Also, if we are able to express the size 
 of the bucket as a _constant expression_, we could use `std::array`
-as the data structure for our bucket - it may be _25.75x_ faster.
+as the data structure for our bucket - it may be _26.35x_ faster.
 
 Alongside the speedup, converting `map` to `vector` saves all the storage 
 used by the `map` to hold its _keys_ - roughly 
