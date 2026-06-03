@@ -134,8 +134,8 @@ So that will be it for now - until the next read, take care.
 # convert a map -> vector
 
 There is something fascinating about
-_vectors_ - I mean a _dynamic array_ or an _array_. I think
-they are quite similar to _maps_, at least, in terms of
+_vectors_ - I mean a _dynamic array_ or an _array_. 
+They are quite similar to _maps_, at least, in terms of
 being _associative containers_. Elements in a `map` are stored 
 in _key-value pairs_ and a `vector` could be considered as such.
 Every element in a `vector` has an _index_, which is the _key_ 
