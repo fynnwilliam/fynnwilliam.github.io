@@ -1,7 +1,8 @@
 # outline
 > [four benefits of std::atomic\<T\>](#four-benefits-of-stdatomict)<br>
 > [counting ~~semaphore~~ words](#counting-semaphore-words)<br>
-> [convert a map -> vector](#convert-a-map---vector)
+> [convert a map -> vector](#convert-a-map---vector)<br>
+> [zigzag conversion - doing more with data](#zigzag-conversion---doing-more-with-data)
 
 
 # four benefits of std::atomic\<T\>
@@ -236,4 +237,175 @@ of the container will be. _Kevin Carpenter_ elaborates on this in his talk
 I do hope you have fun with this update - talk to you later.
 
 [ ↑ back to the top](#outline)
+<br>
 
+# zigzag conversion - doing more with data
+
+Alright, so this is a puzzle I found on the net a while ago and 
+may come in handy when formatting text 
+or creating animations. Ok so we are to rearrange a string say, 
+**PAYPALISHIRING** in a zigzag pattern on a given number of rows like 
+this:
+```
+P   A   H   N
+A P L S I I G
+Y   I   R
+```
+then read the characters row by row to form a new string - 
+**PAHNAPLSIIGYIR**. We will be implementing the _logic_ for making 
+this transformation:
+
+`std::string convert(const std::string &s, size_t rows);`
+
+Observing the zigzag pattern above may seam a bit daunting at first. 
+However, if we reveal the grid in which that pattern lies and proceed 
+to replace each character with its index, things become a bit clearer.
+
+|      |      |      |      |      |      |      |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| P    |      | A    |      | H    |      | N    |
+| A    | P    | L    | S    | I    | I    | G    |
+| Y    |      | I    |      | R    |      |      |
+                Revealing the grid
+
+
+|      |      |      |      |      |      |      |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| 0    |      | 4    |      | 8    |      | C    |
+| 1    | 3    | 5    | 7    | 9    | B    | D    |
+| 2    |      | 6    |      | A    |      |      |
+           Displaying character indices
+_We are using hexadecimal values to maintain a fixed width_
+
+Analysing the grid with indices, one may spot a couple of patterns.
+For every zigzag pattern, there is a unique index for each character in the 
+string. You may also realise a pattern regarding the distance between 
+characters on the same row. We shall observe multiple patterns below to get
+more data.
+
+Example 1:
+
+input: s = **PAYPALISHIRING**, rows = **3**<br>
+output: **PAHNAPLSIIGYIR**
+
+|      |      |      |      |      |      |      |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| P    |      | A    |      | H    |      | N    |
+| A    | P    | L    | S    | I    | I    | G    |
+| Y    |      | I    |      | R    |      |      |
+
+
+|      |      |      |      |      |      |      |  steps |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--    |
+| 0    |      | 4    |      | 8    |      | C    | `-> 4` |
+| 1    | 3    | 5    | 7    | 9    | B    | D    | `-> 2` |
+| 2    |      | 6    |      | A    |      |      | `-> 4` |
+
+----------------------------------------
+
+Example 2:
+
+input: s = **PAYPALISHIRING**, rows = **4**<br>
+output: **PINALSIGYAHRPI**
+
+|      |      |      |      |      |      |      |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
+| P    |      |      | I    |      |      | N    |
+| A    |      | L    | S    |      | I    | G    |
+| Y    | A    |      | H    | R    |      |      |
+| P    |      |      | I    |      |      |      |
+
+
+|      |      |      |      |      |      |      |   steps   |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: | :--       |
+| 0    |      |      | 6    |      |      | C    | `-> 6`    |
+| 1    |      | 5    | 7    |      | B    | D    | `-> 4, 2` |
+| 2    | 4    |      | 8    | A    |      |      | `-> 2, 4` |
+| 3    |      |      | 9    |      |      |      | `-> 6`    |
+
+----------------------------------------
+
+Example 3:
+
+input: s = **PAYPALISHIRING**, rows = **5**<br>
+output: **PHASIYIRPLIGAN**
+
+|      |      |      |      |      |      |
+| :--: | :--: | :--: | :--: | :--: | :--: |
+| P    |      |      |      | H    |      |
+| A    |      |      | S    | I    |      |
+| Y    |      | I    |      | R    |      |
+| P    | L    |      |      | I    |  G   |
+| A    |      |      |      | N    |      |
+
+
+|      |      |      |      |      |      |   steps   |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--       |
+| 0    |      |      |      | 8    |      | `-> 8`    |
+| 1    |      |      | 7    | 9    |      | `-> 6, 2` |
+| 2    |      | 6    |      | A    |      | `-> 4`    |
+| 3    | 5    |      |      | B    |  D   | `-> 2, 6` |
+| 4    |      |      |      | C    |      | `-> 8`    |
+
+
+Further analysis also reveals:
+ - the index of the first element on each row, is the row number.
+ - indices of subsequent elements for the first and last row are the 
+ multiples of `(rows - 1) * 2` - we call this the _initial steps_.
+ - future indices on other rows are the multiples of _current row steps_ - `row_i_steps` 
+   - `row_i_steps` has an initial value of `2 * current row number`
+   - and updated on each iteration by computing 
+   `row_i_steps = initial steps - row_i_steps`. 
+
+You may continue exploring as there is more info buried in this pattern. 
+We are good for an implementation with the facts above though.
+
+```c++
+ 1   std::string convert(const std::string &s, size_t rows) {
+ 2     if (rows == 1zu || rows >= s.size())
+ 3       return s;
+ 4
+ 5     const auto last_row_index = rows - 1zu;
+ 6     const auto initial_steps = last_row_index * 2zu;
+ 7     const auto last = &s.back() + 1;
+ 8
+ 9     std::string new_s(s.size(), ' ');
+10
+11     for (size_t i = 0, x = 0; i < rows; ++i) {
+12       auto row_i_steps = 2zu * i;
+13       for (auto j = s.data() + i; j < last; j += row_i_steps, ++x) {
+14         new_s[x] = *j;
+15         row_i_steps = i == 0zu || i == last_row_index
+16                           ? initial_steps
+17                           : initial_steps - row_i_steps;
+18       }
+19     }
+20
+21     return new_s;
+22   }
+```
+
+_above is a fairly efficient implementation of the zigzag conversion in C++_
+
+So we return early, on _line 3_ if conversion will yield same as the input string.
+Then from _line 5_ to _line 7_, we initialise our frequently used variables. We 
+create a new buffer on _line 9_ to hold the output string. Finally, we copy the
+characters row by row utilising the info we gathered from the grid and return to 
+the caller.
+
+Please see the _topdown level 1 metrics_ breakdown after benchmarking the transformation of 
+a 1,000,000 character array on 10 rows.
+
+```
+# 5.1-full on Intel(R) Core(TM) i5-8350U CPU @ 1.70GHz [kblr/skylake]
+C0    FE               Frontend_Bound   % Slots                        5.3  < [33.0%]
+C0    BAD              Bad_Speculation  % Slots                        0.3  < [33.0%]
+C0    BE               Backend_Bound    % Slots                        7.1  < [33.0%]
+C0    RET              Retiring         % Slots                       87.4    [33.0%]<==
+```
+
+There may be ways to improve the metrics above so I encourage you to give it a try.
+
+Take care folks, talk to you later.
+
+[ ↑ back to the top](#outline)
