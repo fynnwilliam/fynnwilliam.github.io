@@ -262,7 +262,7 @@ However, if we reveal the grid in which that pattern lies and proceed
 to replace each character with its index, things become a bit clearer.
 
 |      |      |      |      |      |      |      |
-| :-- | :-- | :-- | :-- | :-- | :-- | :-- |
+| :--: | :--: | :--: | :--: | :--: | :--: | :--: |
 | P    |      | A    |      | H    |      | N    |
 | A    | P    | L    | S    | I    | I    | G    |
 | Y    |      | I    |      | R    |      |      |
