@@ -267,7 +267,7 @@ to replace each character with its index, things become a bit clearer.
 | A    | P    | L    | S    | I    | I    | G    |
 | Y    |      | I    |      | R    |      |      |
 
-                Revealing the grid
+_Revealing the grid_
 
 
 |      |      |      |      |      |      |      |
@@ -276,7 +276,8 @@ to replace each character with its index, things become a bit clearer.
 | 1    | 3    | 5    | 7    | 9    | B    | D    |
 | 2    |      | 6    |      | A    |      |      |
 
-           Displaying character indices
+_Displaying character indices_
+
 _We are using hexadecimal values to maintain a fixed width_
 
 Analysing the grid with indices, one may spot a couple of patterns.
