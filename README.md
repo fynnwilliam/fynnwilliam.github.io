@@ -506,6 +506,7 @@ in such cases and `std::terminate` also calls
 using `std::raise(SIGABRT)`.
 
 You may follow this [Godbolt Link](https://godbolt.org/z/d8oGvafEv) to analyse the code.
+
 Thank you. Untill another time, take care.
 
 [ ↑ back to the top](#outline)
