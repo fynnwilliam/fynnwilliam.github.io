@@ -2,7 +2,8 @@
 > [four benefits of std::atomic\<T\>](#four-benefits-of-stdatomict)<br>
 > [counting ~~semaphore~~ words](#counting-semaphore-words)<br>
 > [convert a map -> vector](#convert-a-map---vector)<br>
-> [zigzag conversion - doing more with data](#zigzag-conversion---doing-more-with-data)
+> [zigzag conversion - doing more with data](#zigzag-conversion---doing-more-with-data)<br>
+> [wait for the signal](#wait-for-the-signal)
 
 
 # four benefits of std::atomic\<T\>
@@ -413,5 +414,98 @@ C0    RET              Retiring         % Slots                       87.4    [3
 There may be ways to improve the metrics above so I encourage you to give it a try.
 
 Take care folks, talk to you later.
+
+[ ↑ back to the top](#outline)
+<br>
+
+# wait for the signal
+
+The C++ Runtime Library has a predefined flow for when
+a crash occurs. There are quite a number of signals
+and at least, one gets emitted to notify the reader(s).
+
+What we have to do is register our interest in the
+signal(s) of interest as well as what task we intend to
+perform when the signal occurs. Before we get into
+registering our interest, let's have a quick read on
+a couple of signals related to crashes.
+
+1. `SIGINT        External interrupt, usually by the user.`
+2. `SIGILL        Invalid instruction.`
+3. `SIGABRT       Abnormal termination.`
+4. `SIGFPE        Erroneous arithmetic operation.`
+5. `SIGSEGV       Invalid memory access.`
+6. `SIGTERM       Termination request.`
+
+So we have an API from the C++ Standard Library,
+`std::signal` that we use to set the error handler
+for a specific signal. Below is the full signature of
+the function for clarity.
+
+`extern __sighandler_t signal(int __sig, __sighandler_t __handler) noexcept(true)`
+
+where `__sighandler_t` implies `void (*)(int)`
+
+We will utilise the `std::signal` API in our local or test
+builds. Our interest lies in analysing uncaught
+exceptions and signals that may cause our program to
+terminate suddenly. All we need for now, to perform the
+analysis is to print out or save the call stack, then
+reset the signal on its default route. Resetting the
+signal handler to default has a perk to it - based on
+our operating system, we could get the core, dumped
+automatically for us.
+
+Below is a possible implementation to register our
+signals of interest.
+
+On line 3, we write the current call stack to standard
+output. Line 4 and 5 are where we reset the signal
+handler to its default and raise the signal again. The default
+handler usually dumps the core automatically. Then from
+line 8 to 13, we assign each signal a new handler - the
+one we implemented. See lines 2 to 6 please.
+
+```c++
+ 1 const auto install_signal_handlers = [] {
+ 2   static constexpr auto signal_handler = [](int sig) {
+ 3     std::println("sig code '{}' occured\n{}", sig, std::stacktrace::current());
+ 4     std::signal(sig, SIG_DFL);
+ 5     std::raise(sig);
+ 6   };
+ 7
+ 8   std::signal(SIGABRT, signal_handler);
+ 9   std::signal(SIGSEGV, signal_handler);
+10   std::signal(SIGFPE, signal_handler);
+11   std::signal(SIGINT, signal_handler);
+12   std::signal(SIGILL, signal_handler);
+13   std::signal(SIGTERM, signal_handler);
+14 };
+```
+
+We use the code below to test our implementation.
+
+```c++
+int main() {
+  install_signal_handlers();
+
+  throw 42;                    // calls std::terminate -> std::abort -> SIGABRT occurs
+  // std::abort();             // SIGABRT occurs
+  /*int* ptr = nullptr;
+  std::println("{}", *ptr);*/  // SIGSEGV occurs
+  // int a = 4 / 0;            // SIGFPE occurs
+}
+```
+
+You may be wondering why will `throw 42` call
+`std::terminate` and so on. Because there is no
+_catch-block_ to handle the exception - the C++
+Runtime Library is designed to call `std::terminate`
+in such cases and `std::terminate` also calls
+`std::abort` which then makes `SIGABRT` to occur 
+using `std::raise(SIGABRT)`.
+
+You may follow this [Godbolt Link](https://godbolt.org/z/d8oGvafEv) to analyse the code.
+Thank you. Untill another time, take care.
 
 [ ↑ back to the top](#outline)
