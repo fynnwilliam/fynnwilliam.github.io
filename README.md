@@ -504,7 +504,7 @@ in such cases and `std::terminate` also calls
 `std::abort` which then makes `SIGABRT` to occur 
 using `std::raise(SIGABRT)`.
 
-You may follow this [Godbolt Link](https://godbolt.org/z/d8oGvafEv) to analyse the code.
+Kindly follow this [Godbolt Link](https://godbolt.org/z/d8oGvafEv) to analyse the code.
 
 Thank you. Untill another time, take care.
 
