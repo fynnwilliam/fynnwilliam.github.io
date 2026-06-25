@@ -457,14 +457,13 @@ our operating system, we could get the core, dumped
 automatically for us.
 
 Below is a possible implementation to register our
-signals of interest.
-
-On line 3, we write the current call stack to standard
-output. Line 4 and 5 are where we reset the signal
-handler to its default and raise the signal again. The default
-handler usually dumps the core automatically. Then from
-line 8 to 13, we assign each signal a new handler - the
-one we implemented. See lines 2 to 6 please.
+signals of interest. On line 3, we write the current call 
+stack to standard output. Line 4 and 5 are where we reset 
+the signal handler to its default and raise the signal 
+again. The default handler usually dumps the core 
+automatically. Then from line 8 to 13, we assign each 
+signal a new handler - the one we implemented. See lines 
+2 to 6 please.
 
 ```c++
  1 const auto install_signal_handlers = [] {
