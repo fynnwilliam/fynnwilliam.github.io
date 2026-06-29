@@ -233,7 +233,7 @@ In scenarios where we are unable to convert the keys safely into `unsigned`
 values. we may proceed to use a `map`. It is also recommended to consider 
 `unordered_map` and to reserve when you have knowledge of what the size 
 of the container will be. _Kevin Carpenter_ elaborates on this in his talk 
-[O(1) or O(no-no-no): Mastering the unordered_map](https://accuonsea.uk/2026/sessions/o1-or-ono-no-no-mastering-the-unordered_map/).
+[O(1) or O(no-no-no): Mastering the unordered_map](https://www.youtube.com/watch?v=78fYPix0mN4).
 
 I do hope you have fun with this update - talk to you later.
 
