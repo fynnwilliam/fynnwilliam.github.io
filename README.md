@@ -118,7 +118,7 @@ may consider to improve the performance of our routine:
  ```c++
 1   inline auto count_unique_spaces(std::string_view text) noexcept {
 2    size_t spaces = 0;
-3    for (size_t size = text.size() - 1; size > 1; --size) {
+3    for (size_t size = text.size() - 1; size > 0; --size) {
 4      if (std::isspace(text[size - 1]) < std::isspace(text[size]))
 5        ++spaces;
 6    }
