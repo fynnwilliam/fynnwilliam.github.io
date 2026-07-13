@@ -552,7 +552,7 @@ it by bitwise or-ing it with the main value to yield the target
 value and finally, we commit our changes by assigning it to the
 main value.
 
-formula to store data: `data |= incoming_data << bit_width * index;`
+> formula to store data: `data |= incoming_data << bit_width * index;`
 
 ```
   -------------------------------------
@@ -577,7 +577,7 @@ approach but we will need a _bit mask_. The mask is derived by shifting
 the number one, to the left by the bit width of the maximum possible sub
 value and then subtracting one from the resulting value.
 
-formula to compute mask: `(1 << bit_width) - 1;`
+> formula to compute mask: `(1 << bit_width) - 1;`
 
 After the mask is computed, we can pull data from any index by
 shifting the main value to the right by the product of
@@ -585,7 +585,7 @@ the bit width of the maximum possible sub value and the index we are reading
 from and bitwise ANDing it with the mask. Applying the mask is how we
 strip off all unwanted bits from the intermediate value.
 
-formula to load data: `data >> bit_width * index & mask;`
+> formula to load data: `data >> bit_width * index & mask;`
 
 ```
   -------------------------------------
