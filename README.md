@@ -1,10 +1,10 @@
 # outline
-> [four benefits of std::atomic\<T\>](#four-benefits-of-stdatomict)<br>
-> [counting ~~semaphore~~ words](#counting-semaphore-words)<br>
-> [convert a map -> vector](#convert-a-map---vector)<br>
-> [zigzag conversion - doing more with data](#zigzag-conversion---doing-more-with-data)<br>
-> [wait for the signal](#wait-for-the-signal)<br>
-> [packing and unpacking bits](#packing-and-unpacking-bits)
+> - [four benefits of std::atomic\<T\>](#four-benefits-of-stdatomict)
+> - [counting ~~semaphore~~ words](#counting-semaphore-words)
+> - [convert a map -> vector](#convert-a-map---vector)
+> - [zigzag conversion - doing more with data](#zigzag-conversion---doing-more-with-data)
+> - [wait for the signal](#wait-for-the-signal)
+> - [packing and unpacking bits](#packing-and-unpacking-bits)
 
 
 # four benefits of std::atomic\<T\>
