@@ -513,6 +513,8 @@ Thank you. Until another time, take care.
 
 # packing and unpacking bits
 
+> compress | update inplace | encrypt | ... data
+
 There comes a time when holding multiple values in a fixed bitset
 is quite useful - when compressing data or performing inplace
 updates, or we are unable to allocate extra memory or when
@@ -627,6 +629,14 @@ std::println("ip address: {}.{}.{}.{}",
              ipv4 >> bit_width * 3 & mask);
 std::println("main value: {}", ipv4);
 ```
+
+We could have stored the ip address in a `char array` which would require _16 bytes_. So,
+using this approach helps us to compress the data as it requires only _4 bytes_ - a 4x
+reduction in allocated memory. In the packing process, we ended up encrypting the data.
+Printing out the variable, `ipv4` from the snippet above, displays `16,820,416` but with the correct cipher,
+we are able to reveal what is underneath. Lastly, every time we touched the variable, we were
+performing an inplace update. It all depends on what task we are working on - here we illustrate
+some of what is possible and how to do it.
 
 You may follow this [link](https://godbolt.org/z/a1G8h37d4) to confirm the output on compiler explorer please.
 
