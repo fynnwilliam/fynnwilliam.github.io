@@ -3,7 +3,8 @@
 > [counting ~~semaphore~~ words](#counting-semaphore-words)<br>
 > [convert a map -> vector](#convert-a-map---vector)<br>
 > [zigzag conversion - doing more with data](#zigzag-conversion---doing-more-with-data)<br>
-> [wait for the signal](#wait-for-the-signal)
+> [wait for the signal](#wait-for-the-signal)<br>
+> [packing and unpacking bits](#packing-and-unpacking-bits)
 
 
 # four benefits of std::atomic\<T\>
@@ -507,5 +508,128 @@ using `std::raise(SIGABRT)`.
 Kindly follow this [Godbolt Link](https://godbolt.org/z/d8oGvafEv) to analyse the code.
 
 Thank you. Until another time, take care.
+
+[ ↑ back to the top](#outline)
+
+# packing and unpacking bits
+
+There comes a time when holding multiple values in a fixed bitset
+is quite useful - when compressing data or performing inplace
+updates, or we are unable to allocate extra memory or when
+encrypting data, just to name a couple of scenarios. We shall look
+at how to store and retrieve multiple values from an integer.
+
+The number of bits required to form the maximum possible sub value in the
+pack, ought to be less than the full bit width available to hold the entire
+pack. For example, we want to hold several integers with values
+ranging from `0 - 255` in a single integer object. First of all, `8 bits`
+are required to hold value _255_, which is the maximum number in the
+range `0 - 255` and a `uint32_t` has `32 bits`. This implies, we
+can safely pack _4 values_ into an unsigned integer.
+
+Values will be packed into unique zero-based indices as we do with
+arrays, but in reverse order.
+
+```
+ index_3  index_2  index_1  index_0
+-------------------------------------
+|00000000|00000000|00000000|00000000|
+-------------------------------------
+```
+
+Alright, so how do we get data into our object? I'm glad you asked.
+We've got a formula for storing values. There are three stages in
+storing a new value into the available bits.
+
+ 1. align the value to be stored with the targeted index
+ 2. generate a new value by merging it with the main value
+ 3. assign the new value to the main value
+
+Shifting the value to be stored, to the left by the product
+of the bit width of the maximum possible sub value and the index we are
+writing to, sets its bits into position within itself and we merge
+it by bitwise or-ing it with the main value to yield the target
+value and finally, we commit our changes by assigning it to the
+main value.
+
+formula to store data: `data |= incoming_data << bit_width * index;`
+
+```
+  -------------------------------------
+  |00001000|00000000|00000000|00001010| main value
+  -------------------------------------
+
+  -------------------------------------
+  |00000000|00000000|00000000|00101010| value to be stored
+  -------------------------------------
+
+  -------------------------------------
+  |00000000|00101010|00000000|00000000| value to be stored << bit_width * index
+  -------------------------------------
+
+  -------------------------------------
+  |00001000|00101010|00000000|00001010| after merging
+  -------------------------------------
+```
+
+And we may extract values from the various indices using a similar
+approach but we will need a _bit mask_. The mask is derived by shifting
+the number one, to the left by the bit width of the maximum possible sub
+value and then subtracting one from the resulting value.
+
+formula to compute mask: `(1 << bit_width) - 1;`
+
+After the mask is computed, we can pull data from any index by
+shifting the main value to the right by the product of
+the bit width of the maximum possible sub value and the index we are reading
+from and bitwise ANDing it with the mask. Applying the mask is how we
+strip off all unwanted bits from the intermediate value.
+
+formula to load data: `data >> bit_width * index & mask;`
+
+```
+  -------------------------------------
+  |00001000|00101010|00000000|00001010| main value
+  -------------------------------------
+
+  -------------------------------------
+  |00000000|00000000|00000000|11111111| mask
+  -------------------------------------
+
+  -------------------------------------
+  |00000000|00000000|00001000|00101010| main value >> bit_width * index
+  -------------------------------------
+
+  -------------------------------------
+  |00000000|00000000|00000000|00101010| shifted_value & mask
+  -------------------------------------
+```
+
+The snippet below, packs the four octets of an IPv4 address into a
+`std::uint32_t` and then writes the values to standard output.
+
+```c++
+std::uint32_t ipv4 = 0u;
+constexpr std::uint32_t max_value = 255u;
+constexpr std::uint32_t bit_width = std::bit_width(max_value);
+constexpr std::uint32_t mask = (1 << bit_width) - 1;
+
+ipv4 |= 192;
+ipv4 |= 168 << bit_width;
+ipv4 |= 0 << bit_width * 2;
+ipv4 |= 1 << bit_width * 3;
+
+std::println("column 2 holds '{}'", ipv4 >> bit_width & mask);
+std::println("ip address: {}.{}.{}.{}",
+             ipv4 & mask,
+             ipv4 >> bit_width & mask,
+             ipv4 >> bit_width * 2 & mask,
+             ipv4 >> bit_width * 3 & mask);
+std::println("main value: {}", ipv4);
+```
+
+You may follow this [link](https://godbolt.org/z/a1G8h37d4) to confirm the output on compiler explorer please.
+
+Cheers, have a good one.
 
 [ ↑ back to the top](#outline)
