@@ -513,7 +513,7 @@ Thank you. Until another time, take care.
 
 # packing and unpacking bits
 
-> compress | update inplace | encrypt | ... data
+> compress \| update inplace \| encrypt \| ... data
 
 There comes a time when holding multiple values in a fixed bitset
 is quite useful - when compressing data or performing inplace
