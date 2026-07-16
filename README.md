@@ -518,7 +518,7 @@ Thank you. Until another time, take care.
 There comes a time when holding multiple values in a fixed bitset
 is quite useful - when compressing data or performing inplace
 updates, or we are unable to allocate extra memory or when
-encrypting data, just to name a couple of scenarios. We shall look
+encrypting data, the list goes on. We shall look
 at how to store and retrieve multiple values from an integer.
 
 The number of bits required to form the maximum possible sub value in the
