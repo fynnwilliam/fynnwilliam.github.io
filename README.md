@@ -522,14 +522,14 @@ encrypting data, the list goes on. We shall look
 at how to store and retrieve multiple values from an integer.
 
 The number of bits required to form the maximum possible sub value in the
-pack, ought to be less than the full bit width available to hold the entire
+pack, ought to be less than the full bit width available for holding the entire
 pack. For example, we want to hold several integers with values
 ranging from `0 - 255` in a single integer object. First of all, `8 bits`
 are required to hold value _255_, which is the maximum number in the
 range `0 - 255` and a `uint32_t` has `32 bits`. This implies, we
 can safely pack _4 values_ into an unsigned integer.
 
-Values will be packed into unique zero-based indices as we do with
+Values will be set into unique zero-based indices as we do with
 arrays, but in reverse order.
 
 ```
@@ -558,19 +558,19 @@ main value.
 
 ```
   -------------------------------------
-  |00001000|00000000|00000000|00001010| main value
+  |00001000|00000000|00000000|00001010| data
   -------------------------------------
 
   -------------------------------------
-  |00000000|00000000|00000000|00101010| value to be stored
+  |00000000|00000000|00000000|00101010| incoming_data
   -------------------------------------
 
   -------------------------------------
-  |00000000|00101010|00000000|00000000| value to be stored << bit_width * index
+  |00000000|00101010|00000000|00000000| incoming_data << bit_width * index
   -------------------------------------
 
   -------------------------------------
-  |00001000|00101010|00000000|00001010| after merging
+  |00001000|00101010|00000000|00001010| data |= shifted_incoming_data
   -------------------------------------
 ```
 
@@ -591,7 +591,7 @@ strip off all unwanted bits from the intermediate value.
 
 ```
   -------------------------------------
-  |00001000|00101010|00000000|00001010| main value
+  |00001000|00101010|00000000|00001010| data
   -------------------------------------
 
   -------------------------------------
@@ -599,15 +599,15 @@ strip off all unwanted bits from the intermediate value.
   -------------------------------------
 
   -------------------------------------
-  |00000000|00000000|00001000|00101010| main value >> bit_width * index
+  |00000000|00000000|00001000|00101010| data >> bit_width * index
   -------------------------------------
 
   -------------------------------------
-  |00000000|00000000|00000000|00101010| shifted_value & mask
+  |00000000|00000000|00000000|00101010| shifted_data & mask
   -------------------------------------
 ```
 
-The snippet below, packs the four octets of an IPv4 address into a
+The code snippet below packs the four octets of an IPv4 address into a
 `std::uint32_t` and then writes the values to standard output.
 
 ```c++
@@ -630,8 +630,8 @@ std::println("ip address: {}.{}.{}.{}",
 std::println("main value: {}", ipv4);
 ```
 
-We could have stored the ip address in a `char array` which would require _16 bytes_. So,
-using this approach helps us to compress the data as it requires only _4 bytes_ - a 4x
+We could have stored the IP address in a `char array` which would require _16 bytes_. So,
+using this approach helps us to compress the data as it requires only _4 bytes_ - a 75%
 reduction in allocated memory. In the packing process, we ended up encrypting the data.
 Printing out the variable, `ipv4` from the snippet above, displays `16,820,416` but with the correct cipher,
 we are able to reveal what is underneath. Lastly, every time we touched the variable, we were
